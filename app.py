@@ -52,6 +52,14 @@ st.markdown("""
         border-left: 5px solid #4169E1;
         margin: 1rem 0;
     }
+    .input-card {
+        background: rgba(240, 248, 255, 0.95);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #87CEEB;
+        margin: 1rem 0;
+    }
     .stButton>button {
         background: linear-gradient(45deg, #FFD700, #FFA500);
         color: white;
@@ -81,6 +89,9 @@ st.markdown("""
         background-color: #fff8e1;
         color: #f57c00;
         border: 2px solid #ffb300;
+    }
+    .tab-content {
+        padding: 1rem 0;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -331,51 +342,187 @@ elif page == "🎯 Prediction":
         </div>
         """, unsafe_allow_html=True)
     
-    # Input Form
-    col1, col2 = st.columns(2)
+    # Input Form with Tabs for different input methods
+    st.markdown("""
+    <div class="input-card">
+        <h3>🔧 Input Methods</h3>
+        <p>Choose how you want to input data:</p>
+    </div>
+    """, unsafe_allow_html=True)
     
-    with col1:
+    input_tab1, input_tab2 = st.tabs(["🎯 Quick Input (Sliders)", "⌨️ Manual Input (Numbers)"])
+    
+    with input_tab1:
         st.markdown("""
-        <div class="prediction-card">
-            <h3>📍 Location & Crop</h3>
+        <div class="tab-content">
+            <h4>Use sliders for quick adjustments</h4>
         </div>
         """, unsafe_allow_html=True)
         
-        area = st.selectbox("🌍 Country", sorted(df['Area'].unique()), index=0 if 'Albania' in df['Area'].unique() else 0)
-        item = st.selectbox("🌾 Crop Type", sorted(df['Item'].unique()), index=list(df['Item'].unique()).index('Cassava') if 'Cassava' in df['Item'].unique() else 0)
-        year = st.slider("📅 Year", 1990, 2030, 2023)
-    
-    with col2:
-        st.markdown("""
-        <div class="prediction-card">
-            <h3>🌦️ Environmental Factors</h3>
-        </div>
-        """, unsafe_allow_html=True)
+        col1, col2 = st.columns(2)
         
-        # Create columns for better layout
-        col2a, col2b = st.columns(2)
-        
-        with col2a:
-            rainfall = st.slider("💧 Rainfall (mm/year)", 0, 3000, 1485, 
-                               help="Annual rainfall in millimeters")
-            pesticides = st.slider("🧪 Pesticides (tonnes)", 0, 500, 121,
-                                 help="Pesticide usage in tonnes per hectare")
-        
-        with col2b:
-            temperature = st.slider("🌡️ Temperature (°C)", -10, 40, 16,
-                                  help="Average annual temperature in Celsius")
+        with col1:
+            st.markdown("""
+            <div class="prediction-card">
+                <h3>📍 Location & Crop</h3>
+            </div>
+            """, unsafe_allow_html=True)
             
-            # Add a visual indicator for temperature
-            if temperature < 10:
-                temp_status = "❄️ Cool"
-            elif temperature < 20:
-                temp_status = "🌤️ Moderate"
-            elif temperature < 30:
-                temp_status = "☀️ Warm"
-            else:
-                temp_status = "🔥 Hot"
+            area = st.selectbox("🌍 Country", sorted(df['Area'].unique()), 
+                              index=0 if 'Albania' in df['Area'].unique() else 0,
+                              key="area_slider")
+            item = st.selectbox("🌾 Crop Type", sorted(df['Item'].unique()), 
+                              index=list(df['Item'].unique()).index('Cassava') if 'Cassava' in df['Item'].unique() else 0,
+                              key="item_slider")
+            year = st.slider("📅 Year", 1990, 2050, 2023, key="year_slider")
+        
+        with col2:
+            st.markdown("""
+            <div class="prediction-card">
+                <h3>🌦️ Environmental Factors</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Create columns for better layout
+            col2a, col2b = st.columns(2)
+            
+            with col2a:
+                rainfall = st.slider("💧 Rainfall (mm/year)", 0, 5000, 1485, 
+                                   help="Annual rainfall in millimeters",
+                                   key="rainfall_slider")
+                pesticides = st.slider("🧪 Pesticides (tonnes)", 0, 1000, 121,
+                                     help="Pesticide usage in tonnes per hectare",
+                                     key="pesticides_slider")
+            
+            with col2b:
+                temperature = st.slider("🌡️ Temperature (°C)", -20, 50, 16,
+                                      help="Average annual temperature in Celsius",
+                                      key="temperature_slider")
                 
-            st.markdown(f"**Temperature Status:** {temp_status}")
+                # Add a visual indicator for temperature
+                if temperature < 10:
+                    temp_status = "❄️ Cool"
+                elif temperature < 20:
+                    temp_status = "🌤️ Moderate"
+                elif temperature < 30:
+                    temp_status = "☀️ Warm"
+                else:
+                    temp_status = "🔥 Hot"
+                    
+                st.markdown(f"**Temperature Status:** {temp_status}")
+    
+    with input_tab2:
+        st.markdown("""
+        <div class="tab-content">
+            <h4>Enter exact values for precise control</h4>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            <div class="prediction-card">
+                <h3>📍 Location & Crop</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            area_manual = st.selectbox("🌍 Country", sorted(df['Area'].unique()), 
+                                     index=0 if 'Albania' in df['Area'].unique() else 0,
+                                     key="area_manual")
+            item_manual = st.selectbox("🌾 Crop Type", sorted(df['Item'].unique()), 
+                                     index=list(df['Item'].unique()).index('Cassava') if 'Cassava' in df['Item'].unique() else 0,
+                                     key="item_manual")
+            year_manual = st.number_input("📅 Year", min_value=1990, max_value=2050, value=2023, step=1,
+                                        help="Enter the year for prediction",
+                                        key="year_manual")
+        
+        with col2:
+            st.markdown("""
+            <div class="prediction-card">
+                <h3>🌦️ Environmental Factors</h3>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col2a, col2b = st.columns(2)
+            
+            with col2a:
+                rainfall_manual = st.number_input("💧 Rainfall (mm/year)", 
+                                                min_value=0, 
+                                                max_value=10000, 
+                                                value=1485,
+                                                step=10,
+                                                help="Annual rainfall in millimeters",
+                                                key="rainfall_manual")
+                
+                pesticides_manual = st.number_input("🧪 Pesticides (tonnes)", 
+                                                  min_value=0.0, 
+                                                  max_value=2000.0, 
+                                                  value=121.0,
+                                                  step=0.1,
+                                                  help="Pesticide usage in tonnes per hectare",
+                                                  key="pesticides_manual")
+            
+            with col2b:
+                temperature_manual = st.number_input("🌡️ Temperature (°C)", 
+                                                   min_value=-50.0, 
+                                                   max_value=60.0, 
+                                                   value=16.37,
+                                                   step=0.1,
+                                                   help="Average annual temperature in Celsius",
+                                                   key="temperature_manual")
+                
+                # Add a visual indicator for temperature
+                if temperature_manual < 10:
+                    temp_status_manual = "❄️ Cool"
+                elif temperature_manual < 20:
+                    temp_status_manual = "🌤️ Moderate"
+                elif temperature_manual < 30:
+                    temp_status_manual = "☀️ Warm"
+                else:
+                    temp_status_manual = "🔥 Hot"
+                    
+                st.markdown(f"**Temperature Status:** {temp_status_manual}")
+    
+    # Determine which input method to use
+    use_manual_input = input_tab2  # This will be True if manual tab is active
+    
+    if use_manual_input:
+        # Use manual input values
+        final_area = area_manual
+        final_item = item_manual
+        final_year = year_manual
+        final_rainfall = rainfall_manual
+        final_pesticides = pesticides_manual
+        final_temperature = temperature_manual
+        input_method = "Manual Input"
+    else:
+        # Use slider values
+        final_area = area
+        final_item = item
+        final_year = year
+        final_rainfall = rainfall
+        final_pesticides = pesticides
+        final_temperature = temperature
+        input_method = "Quick Input"
+    
+    # Display current input values
+    st.markdown("""
+    <div class="info-card">
+        <h3>📋 Current Input Values</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.info(f"**Country:** {final_area}")
+        st.info(f"**Crop:** {final_item}")
+    with col2:
+        st.info(f"**Year:** {final_year}")
+        st.info(f"**Rainfall:** {final_rainfall} mm/year")
+    with col3:
+        st.info(f"**Pesticides:** {final_pesticides} tonnes")
+        st.info(f"**Temperature:** {final_temperature}°C")
     
     # Unified Prediction Function
     def predict_yield(year, rainfall, pesticides, temperature, area, item):
@@ -408,7 +555,7 @@ elif page == "🎯 Prediction":
     # Prediction Button
     if st.button("🚀 PREDICT YIELD", use_container_width=True):
         with st.spinner("🔮 Analyzing data and predicting yield..."):
-            prediction, model_type = predict_yield(year, rainfall, pesticides, temperature, area, item)
+            prediction, model_type = predict_yield(final_year, final_rainfall, final_pesticides, final_temperature, final_area, final_item)
             
             st.success(f"✅ Prediction Complete! ({model_type})")
             
@@ -427,11 +574,11 @@ elif page == "🎯 Prediction":
             with col2:
                 st.metric("In Tons/Hectare", f"{prediction/10000:,.1f} t/ha")
             with col3:
-                avg_yield = df[df['Item'] == item]['hg/ha_yield'].mean()
+                avg_yield = df[df['Item'] == final_item]['hg/ha_yield'].mean()
                 difference = ((prediction - avg_yield) / avg_yield * 100)
                 st.metric("Vs Average", f"{difference:+.1f}%")
             with col4:
-                st.metric("Model Type", model_type)
+                st.metric("Input Method", input_method)
             
             # Input Summary
             st.subheader("📋 Input Summary")
@@ -439,15 +586,15 @@ elif page == "🎯 Prediction":
             
             with col1:
                 input_df = pd.DataFrame({
-                    'Parameter': ['Country', 'Crop', 'Year'],
-                    'Value': [area, item, str(year)]
+                    'Parameter': ['Country', 'Crop', 'Year', 'Input Method'],
+                    'Value': [final_area, final_item, str(final_year), input_method]
                 })
                 st.table(input_df)
             
             with col2:
                 input_df_env = pd.DataFrame({
                     'Parameter': ['Rainfall', 'Pesticides', 'Temperature'],
-                    'Value': [f"{rainfall} mm/year", f"{pesticides} tonnes", f"{temperature}°C"]
+                    'Value': [f"{final_rainfall} mm/year", f"{final_pesticides} tonnes", f"{final_temperature}°C"]
                 })
                 st.table(input_df_env)
             
@@ -455,13 +602,13 @@ elif page == "🎯 Prediction":
             st.subheader("📈 Yield Prediction Gauge")
             
             # Calculate min and max for gauge
-            min_yield = df[df['Item'] == item]['hg/ha_yield'].min()
-            max_yield = df[df['Item'] == item]['hg/ha_yield'].max()
+            min_yield = df[df['Item'] == final_item]['hg/ha_yield'].min()
+            max_yield = df[df['Item'] == final_item]['hg/ha_yield'].max()
             
             fig = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
                 value=prediction,
-                title={'text': f"Yield Prediction for {item} in {area}", 'font': {'size': 20}},
+                title={'text': f"Yield Prediction for {final_item} in {final_area}", 'font': {'size': 20}},
                 delta={'reference': avg_yield, 'relative': True, 'valueformat': '.1%'},
                 gauge={
                     'axis': {'range': [min_yield, max_yield], 'tickwidth': 1},
@@ -494,13 +641,13 @@ elif page == "🎯 Prediction":
             with col1:
                 # Historical trend for selected crop and country
                 st.markdown("**Historical Trend**")
-                historical_data = df[(df['Item'] == item) & (df['Area'] == area)]
+                historical_data = df[(df['Item'] == final_item) & (df['Area'] == final_area)]
                 if not historical_data.empty:
                     fig_trend = px.line(
                         historical_data.groupby('Year')['hg/ha_yield'].mean().reset_index(),
                         x='Year',
                         y='hg/ha_yield',
-                        title=f"{item} Yield Trend in {area}"
+                        title=f"{final_item} Yield Trend in {final_area}"
                     )
                     fig_trend.add_hline(y=prediction, line_dash="dash", line_color="red", 
                                        annotation_text="Prediction")
@@ -520,9 +667,9 @@ elif page == "🎯 Prediction":
                     title="Top Crops by Average Yield"
                 )
                 # Highlight the selected crop
-                if item in crop_comparison.index:
+                if final_item in crop_comparison.index:
                     fig_comparison.update_traces(
-                        marker_color=['red' if crop == item else 'blue' for crop in crop_comparison.index]
+                        marker_color=['red' if crop == final_item else 'blue' for crop in crop_comparison.index]
                     )
                 st.plotly_chart(fig_comparison, use_container_width=True)
             
@@ -530,10 +677,10 @@ elif page == "🎯 Prediction":
             st.subheader("💡 Insights & Recommendations")
             
             if prediction > avg_yield * 1.1:
-                st.success(f"**Excellent Conditions!** Yield is {((prediction-avg_yield)/avg_yield*100):.1f}% above average for {item}.")
+                st.success(f"**Excellent Conditions!** Yield is {((prediction-avg_yield)/avg_yield*100):.1f}% above average for {final_item}.")
                 st.info("**Recommendations:** Continue current practices. Consider scaling production.")
             elif prediction > avg_yield * 0.9:
-                st.info(f"**Good Conditions** Yield is close to average for {item}.")
+                st.info(f"**Good Conditions** Yield is close to average for {final_item}.")
                 st.info("**Recommendations:** Maintain current practices. Monitor for any changes in conditions.")
             else:
                 st.warning(f"**Challenging Conditions** Yield is {((avg_yield-prediction)/avg_yield*100):.1f}% below average. Consider adjusting inputs.")
@@ -547,4 +694,3 @@ st.markdown("""
     <p>💡 Making agriculture smarter with data-driven insights</p>
 </div>
 """, unsafe_allow_html=True)
-
