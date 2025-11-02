@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS
+# Custom CSS with improved styling
 st.markdown("""
 <style>
     .main-header {
@@ -44,6 +44,14 @@ st.markdown("""
         border-left: 5px solid #FFC107;
         margin: 1rem 0;
     }
+    .info-card {
+        background: rgba(173, 216, 230, 0.95);
+        padding: 1.5rem;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        border-left: 5px solid #4169E1;
+        margin: 1rem 0;
+    }
     .stButton>button {
         background: linear-gradient(45deg, #FFD700, #FFA500);
         color: white;
@@ -56,6 +64,23 @@ st.markdown("""
     .stButton>button:hover {
         background: linear-gradient(45deg, #FFA500, #FF8C00);
         color: white;
+    }
+    .mode-indicator {
+        padding: 10px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        text-align: center;
+        margin: 10px 0;
+    }
+    .ai-mode {
+        background-color: #e6f7e9;
+        color: #2e7d32;
+        border: 2px solid #4caf50;
+    }
+    .demo-mode {
+        background-color: #fff8e1;
+        color: #f57c00;
+        border: 2px solid #ffb300;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -112,7 +137,7 @@ def load_data():
             'pesticides_tonnes': np.random.normal(121, 30, n_samples),
             'avg_temp': np.random.normal(16.37, 3, n_samples),
             'Area': np.random.choice(['Albania', 'Argentina', 'Armenia', 'Australia', 'Brazil', 'China', 'India', 'USA'], n_samples),
-            'Item': np.random.choice(['Maize', 'Potatoes', 'Rice', 'Wheat', 'Soybeans', 'Barley', 'Sorghum'], n_samples),
+            'Item': np.random.choice(['Maize', 'Potatoes', 'Rice', 'Wheat', 'Soybeans', 'Barley', 'Sorghum', 'Cassava'], n_samples),
             'hg/ha_yield': np.random.normal(25000, 15000, n_samples)
         }
         
@@ -130,7 +155,8 @@ def demo_predict_yield(year, rainfall, pesticides, temperature, area, item):
     # Base yield based on crop type
     crop_base_yields = {
         'Maize': 30000, 'Potatoes': 25000, 'Rice': 35000, 
-        'Wheat': 28000, 'Soybeans': 22000, 'Barley': 20000, 'Sorghum': 18000
+        'Wheat': 28000, 'Soybeans': 22000, 'Barley': 20000, 
+        'Sorghum': 18000, 'Cassava': 26000
     }
     
     base_yield = crop_base_yields.get(item, 25000)
@@ -163,29 +189,54 @@ page = st.sidebar.radio("Choose Page", ["🏠 Home", "🎯 Prediction"])
 # Show export instructions in sidebar
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🔧 Setup Instructions")
+
+# Mode indicator
 if model is None:
-    st.sidebar.markdown("""
+    mode_class = "demo-mode"
+    mode_text = "🎭 DEMO MODE (Using simulated predictions)"
+    st.sidebar.markdown(f"""
+    <div class="mode-indicator {mode_class}">{mode_text}</div>
+    
     **To use real AI model:**
     1. Open your notebook
     2. Run the export cell
     3. Restart this app
-    
-    **Current mode:** 🎭 **DEMO** (Using simulated predictions)
-    """)
+    """, unsafe_allow_html=True)
 else:
-    st.sidebar.markdown("""
-    **Current mode:** 🤖 **AI MODEL** (Using trained ML model)
-    """)
+    mode_class = "ai-mode"
+    mode_text = "🤖 AI MODEL (Using trained ML model)"
+    st.sidebar.markdown(f"""
+    <div class="mode-indicator {mode_class}">{mode_text}</div>
+    
+    **Model Status:** ✅ Ready
+    """, unsafe_allow_html=True)
+
+# Add quick stats to sidebar
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 📊 Quick Stats")
+col1, col2 = st.sidebar.columns(2)
+with col1:
+    st.metric("🌍 Countries", df['Area'].nunique())
+with col2:
+    st.metric("🌾 Crops", df['Item'].nunique())
 
 if page == "🏠 Home":
     col1, col2 = st.columns([2, 1])
     
     with col1:
+        # Mode indicator at the top
         if model is None:
-            st.markdown("""
+            st.markdown(f"""
             <div class="demo-card">
                 <h2>🎭 Demo Mode Active</h2>
                 <p>Currently running with <b>simulated predictions</b>. For real AI predictions, export your model from the notebook.</p>
+            </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+            <div class="prediction-card">
+                <h2>🤖 AI Model Active</h2>
+                <p>Using <b>trained machine learning model</b> for accurate predictions.</p>
             </div>
             """, unsafe_allow_html=True)
         
@@ -211,8 +262,27 @@ if page == "🏠 Home":
             </ol>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Data Preview
+        st.markdown("""
+        <div class="info-card">
+            <h3>📋 Data Overview</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        col1, col2 = st.columns(2)
+        with col1:
+            st.dataframe(df.head(10), use_container_width=True)
+        with col2:
+            st.dataframe(df.describe(), use_container_width=True)
     
     with col2:
+        st.markdown("""
+        <div class="info-card">
+            <h3>📈 Key Metrics</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
         st.metric("🌍 Countries", df['Area'].nunique())
         st.metric("🌾 Crops", df['Item'].nunique())
         st.metric("📊 Records", f"{len(df):,}")
@@ -223,20 +293,38 @@ if page == "🏠 Home":
             st.metric("🔧 Mode", "AI MODEL")
             if model_info and 'performance' in model_info:
                 st.metric("🎯 Accuracy", f"{model_info['performance']['r2_score']:.1%}")
+        
+        # Top crops visualization
+        st.markdown("""
+        <div class="info-card">
+            <h3>🌾 Top Crops by Yield</h3>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        top_crops = df.groupby('Item')['hg/ha_yield'].mean().sort_values(ascending=False).head(5)
+        fig = px.bar(
+            x=top_crops.values, 
+            y=top_crops.index,
+            orientation='h',
+            title="Average Yield by Crop",
+            labels={'x': 'Yield (hg/ha)', 'y': 'Crop'}
+        )
+        fig.update_layout(height=300)
+        st.plotly_chart(fig, use_container_width=True)
 
 elif page == "🎯 Prediction":
     st.markdown('<h1 class="main-header">🎯 Crop Yield Prediction</h1>', unsafe_allow_html=True)
     
     # Show mode indicator
     if model is None:
-        st.markdown("""
+        st.markdown(f"""
         <div class="demo-card">
             <h3>🎭 Demo Mode</h3>
             <p>Using <b>simulated predictions</b> based on crop science formulas. For AI predictions, export your trained model.</p>
         </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("""
+        st.markdown(f"""
         <div class="prediction-card">
             <h3>🤖 AI Model Active</h3>
             <p>Using <b>trained machine learning model</b> for accurate predictions.</p>
@@ -253,8 +341,8 @@ elif page == "🎯 Prediction":
         </div>
         """, unsafe_allow_html=True)
         
-        area = st.selectbox("🌍 Country", sorted(df['Area'].unique()))
-        item = st.selectbox("🌾 Crop Type", sorted(df['Item'].unique()))
+        area = st.selectbox("🌍 Country", sorted(df['Area'].unique()), index=0 if 'Albania' in df['Area'].unique() else 0)
+        item = st.selectbox("🌾 Crop Type", sorted(df['Item'].unique()), index=list(df['Item'].unique()).index('Cassava') if 'Cassava' in df['Item'].unique() else 0)
         year = st.slider("📅 Year", 1990, 2030, 2023)
     
     with col2:
@@ -264,12 +352,30 @@ elif page == "🎯 Prediction":
         </div>
         """, unsafe_allow_html=True)
         
-        rainfall = st.slider("💧 Rainfall (mm/year)", 0, 3000, 1485, 
-                           help="Annual rainfall in millimeters")
-        pesticides = st.slider("🧪 Pesticides (tonnes)", 0, 500, 121,
-                             help="Pesticide usage in tonnes per hectare")
-        temperature = st.slider("🌡️ Temperature (°C)", -10, 40, 16,
-                              help="Average annual temperature in Celsius")
+        # Create columns for better layout
+        col2a, col2b = st.columns(2)
+        
+        with col2a:
+            rainfall = st.slider("💧 Rainfall (mm/year)", 0, 3000, 1485, 
+                               help="Annual rainfall in millimeters")
+            pesticides = st.slider("🧪 Pesticides (tonnes)", 0, 500, 121,
+                                 help="Pesticide usage in tonnes per hectare")
+        
+        with col2b:
+            temperature = st.slider("🌡️ Temperature (°C)", -10, 40, 16,
+                                  help="Average annual temperature in Celsius")
+            
+            # Add a visual indicator for temperature
+            if temperature < 10:
+                temp_status = "❄️ Cool"
+            elif temperature < 20:
+                temp_status = "🌤️ Moderate"
+            elif temperature < 30:
+                temp_status = "☀️ Warm"
+            else:
+                temp_status = "🔥 Hot"
+                
+            st.markdown(f"**Temperature Status:** {temp_status}")
     
     # Unified Prediction Function
     def predict_yield(year, rainfall, pesticides, temperature, area, item):
@@ -347,22 +453,27 @@ elif page == "🎯 Prediction":
             
             # Yield Gauge Chart
             st.subheader("📈 Yield Prediction Gauge")
+            
+            # Calculate min and max for gauge
+            min_yield = df[df['Item'] == item]['hg/ha_yield'].min()
+            max_yield = df[df['Item'] == item]['hg/ha_yield'].max()
+            
             fig = go.Figure(go.Indicator(
                 mode="gauge+number+delta",
                 value=prediction,
                 title={'text': f"Yield Prediction for {item} in {area}", 'font': {'size': 20}},
                 delta={'reference': avg_yield, 'relative': True, 'valueformat': '.1%'},
                 gauge={
-                    'axis': {'range': [None, max(prediction*1.3, avg_yield*1.5)], 'tickwidth': 1},
+                    'axis': {'range': [min_yield, max_yield], 'tickwidth': 1},
                     'bar': {'color': "darkgreen"},
                     'bgcolor': "white",
                     'borderwidth': 2,
                     'bordercolor': "gray",
                     'steps': [
-                        {'range': [0, avg_yield*0.6], 'color': "lightcoral"},
+                        {'range': [min_yield, avg_yield*0.6], 'color': "lightcoral"},
                         {'range': [avg_yield*0.6, avg_yield*0.9], 'color': "lightyellow"},
                         {'range': [avg_yield*0.9, avg_yield*1.2], 'color': "lightgreen"},
-                        {'range': [avg_yield*1.2, avg_yield*1.5], 'color': "green"}
+                        {'range': [avg_yield*1.2, max_yield], 'color': "green"}
                     ],
                     'threshold': {
                         'line': {'color': "red", 'width': 4},
@@ -375,15 +486,58 @@ elif page == "🎯 Prediction":
             fig.update_layout(height=400, margin=dict(t=50, b=10, l=10, r=10))
             st.plotly_chart(fig, use_container_width=True)
             
+            # Additional Visualizations
+            st.subheader("📊 Additional Insights")
+            
+            col1, col2 = st.columns(2)
+            
+            with col1:
+                # Historical trend for selected crop and country
+                st.markdown("**Historical Trend**")
+                historical_data = df[(df['Item'] == item) & (df['Area'] == area)]
+                if not historical_data.empty:
+                    fig_trend = px.line(
+                        historical_data.groupby('Year')['hg/ha_yield'].mean().reset_index(),
+                        x='Year',
+                        y='hg/ha_yield',
+                        title=f"{item} Yield Trend in {area}"
+                    )
+                    fig_trend.add_hline(y=prediction, line_dash="dash", line_color="red", 
+                                       annotation_text="Prediction")
+                    st.plotly_chart(fig_trend, use_container_width=True)
+                else:
+                    st.info("No historical data available for this crop and country combination")
+            
+            with col2:
+                # Crop comparison
+                st.markdown("**Crop Comparison**")
+                crop_comparison = df.groupby('Item')['hg/ha_yield'].mean().sort_values(ascending=False).head(10)
+                fig_comparison = px.bar(
+                    crop_comparison.reset_index(),
+                    x='hg/ha_yield',
+                    y='Item',
+                    orientation='h',
+                    title="Top Crops by Average Yield"
+                )
+                # Highlight the selected crop
+                if item in crop_comparison.index:
+                    fig_comparison.update_traces(
+                        marker_color=['red' if crop == item else 'blue' for crop in crop_comparison.index]
+                    )
+                st.plotly_chart(fig_comparison, use_container_width=True)
+            
             # Additional Insights
             st.subheader("💡 Insights & Recommendations")
             
             if prediction > avg_yield * 1.1:
                 st.success(f"**Excellent Conditions!** Yield is {((prediction-avg_yield)/avg_yield*100):.1f}% above average for {item}.")
+                st.info("**Recommendations:** Continue current practices. Consider scaling production.")
             elif prediction > avg_yield * 0.9:
                 st.info(f"**Good Conditions** Yield is close to average for {item}.")
+                st.info("**Recommendations:** Maintain current practices. Monitor for any changes in conditions.")
             else:
                 st.warning(f"**Challenging Conditions** Yield is {((avg_yield-prediction)/avg_yield*100):.1f}% below average. Consider adjusting inputs.")
+                st.info("**Recommendations:** Review irrigation, fertilization, and pest control strategies.")
 
 # Footer
 st.markdown("---")
