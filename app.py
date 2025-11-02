@@ -547,3 +547,4 @@ st.markdown("""
     <p>💡 Making agriculture smarter with data-driven insights</p>
 </div>
 """, unsafe_allow_html=True)
+
