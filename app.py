@@ -920,3 +920,9 @@ st.markdown("""
     <p style="margin: 0; font-size: 0.95rem; font-weight: 500;">Crop Yield Predictor | Data-Driven Agriculture</p>
 </div>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
