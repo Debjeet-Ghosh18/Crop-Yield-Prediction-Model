@@ -11,3 +11,19 @@ Multiple ML algorithms (Decision Tree, Random Forest, KNN)
 A Streamlit dashboard for real-time predictions
 
 Highly modular directory structure for scalability and future enhancements
+Project Directory Structure
+CROP_YIELD_PREDICTION
+├── data
+├── model
+│   ├── crop_yield_model.pkl
+│   ├── model_info.pkl
+│   ├── preprocessor.pkl
+│   └── yield_df.csv
+├── utils
+│   └── helpers.py
+├── app.py
+├── Crop_Yield_Prediction.ipynb
+├── dashboard.py
+├── README.md
+├── requirements.txt
+└── setup.py
