@@ -27,3 +27,24 @@ CROP_YIELD_PREDICTION
 ├── README.md
 ├── requirements.txt
 └── setup.py
+🛠 Technologies Used
+Programming & Libraries
+
+Python 3.11
+
+Pandas, NumPy — Data Analysis
+
+Scikit-learn — ML Algorithms (Decision Tree, Random Forest, KNN)
+
+Matplotlib, Seaborn, Plotly — Visualization
+
+Deployment & Tools
+
+Streamlit — Interactive Web App
+
+Pickle — Model Serialization
+
+GitHub — Version Control
+
+VS Code, Jupyter Notebook — Development
+
