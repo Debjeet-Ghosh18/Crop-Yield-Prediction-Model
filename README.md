@@ -48,3 +48,99 @@ GitHub — Version Control
 
 VS Code, Jupyter Notebook — Development
 
+🔑 Key Functionalities
+✔ 1. Data Preprocessing Pipeline
+
+Automated cleaning, handling of missing values, encoding categorical features, and normalization for improved model accuracy.
+
+✔ 2. Exploratory Data Analysis (EDA)
+
+Includes:
+
+Time-series analysis of yield across years
+
+Country-wise and crop-wise comparison
+
+Heatmaps and correlation analysis
+
+✔ 3. Model Training & Evaluation
+
+Implements and compares:
+
+Decision Tree Regressor
+
+Random Forest Regressor
+
+K-Nearest Neighbors (KNN)
+
+Evaluation Metrics:
+
+R² Score
+
+MAE (Mean Absolute Error)
+
+RMSE (Root Mean Squared Error)
+
+Achieved up to 96.5% accuracy after optimization.
+
+✔ 4. Performance Optimization
+
+Hyperparameter tuning
+
+Cross-validation
+
+Feature engineering
+
+✔ 5. Interactive Prediction Dashboard
+
+Built using Streamlit.
+Users input:
+
+Country
+
+Crop Type
+
+Rainfall
+
+Temperature
+
+Pesticide usage
+
+🔮 The system predicts crop yield in real time.
+
+✔ 6. Visual Analytics
+
+Interactive charts generated using Plotly for:
+
+Model performance comparison
+
+Feature importance
+
+Yield trends
+
+✔ 7. Scalable & Extensible Architecture
+
+Easily extendable to include:
+
+Time-series forecasting
+
+Satellite imagery
+
+IoT sensor data
+
+Additional ML or deep learning models
+
+🚀 How to Run the Project
+1. Clone the Repository
+git clone https://github.com/your-username/CROP_YIELD_PREDICTION.git
+cd CROP_YIELD_PREDICTION
+
+2. Install Dependencies
+pip install -r requirements.txt
+
+3. Run the Jupyter Notebook (Optional)
+jupyter notebook
+
+4. Launch the Streamlit Dashboard
+streamlit run dashboard.py
+
