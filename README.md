@@ -11,6 +11,7 @@ Multiple ML algorithms (Decision Tree, Random Forest, KNN)
 A Streamlit dashboard for real-time predictions
 
 Highly modular directory structure for scalability and future enhancements
+
 Project Directory Structure
 CROP_YIELD_PREDICTION
 ├── data
