@@ -107,6 +107,8 @@ Temperature
 
 Pesticide usage
 
+
+
 🔮 The system predicts crop yield in real time.
 
 ✔ 6. Visual Analytics
