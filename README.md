@@ -147,7 +147,7 @@ pip install -r requirements.txt
 jupyter notebook
 
 4. Launch the Streamlit Dashboard
-streamlit run dashboard.py
+streamlit run app.py
 
 
 
